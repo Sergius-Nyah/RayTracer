@@ -57,6 +57,7 @@
                                 <p id="info_log"></p>
                             </div>
                         </div>
+                        <!-- Input Fields -->
                         <div class="row">
                             <div class="input-field col s6">
                                 <input value="4" id="samplersize" type="text" class="validate">
@@ -99,10 +100,11 @@
                         <p>
                             <a onclick="pause();saveProgress();" class="btn tooltipped waves-effect waves-light" style="width:50%;" data-position="left" data-delay="10" data-tooltip="Save Progress">Save</a>
                         </p>
-                        <p>
+                      
+                            <!-- Load file -->
                             <div class="file-field input-field">
-                                <div onclick="pause();" class="btn tooltipped waves-effect waves-light" style="height:36px;line-height:36px;width:50%" data-position="left" data-delay="10" data-tooltip="Load Progress">
-                                    <span>Load</span>
+                                <div onclick="pause();" class="btn tooltipped waves-effect waves-light" data-position="left" data-delay="10" data-tooltip="Load Progress">
+                                    <span>Load file</span>
                                     <input id="file" type="file">
                                 </div>
                             </div>
@@ -115,6 +117,7 @@
                     <div class="col s10 m6 l12">
                         <p class="input-field">
                             <select id="filename">
+                                <option value="apple.obj" selected>apple.obj</option>
                                 <option value="box.obj" selected>box.obj</option>
                                 <option value="bunny.obj">bunny.obj</option>
                                 <option value="cube_triangle.obj">cube_triangle.obj</option>
@@ -133,47 +136,16 @@
                                 <option value="test.obj">test.obj</option>
                                 <option value="test2.obj">test2.obj</option>
                                 <option value="tetrahedron.obj">tetrahedron.obj</option>
+                                <option value="torus.obj">torus.obj</option>
+                                <option value="tree.obj">tree.obj</option>
+                                <option value="vase.obj">vase.obj</option>
+                                <option value="wheel.obj">wheel.obj</option>
                             </select>
-                            <label>Select Model</label>
+                            <label>Select a Model</label>
                         </p>
                         <p>
                             <input type="checkbox" id="smooth" />
-                            <label for="smooth">Smooth Shading</label>
-                        </p>
-                        <p id="startRenderingButton">
-                            <a onclick="loadModel();" class="btn waves-effect waves-light" style="width:50%;">Run</a>
-                        </p>
-                    </div>
-                </div>
-                <!-- panel 2 -->
-                <div id="panel2" class="row">
-                    <div class="col s10 m6 l12">
-                        <p class="input-field">
-                            <select id="filename">
-                                <option value="box.obj" selected>box.obj</option>
-                                <option value="bunny.obj">bunny.obj</option>
-                                <option value="cube_triangle.obj">cube_triangle.obj</option>
-                                <option value="diamond.obj">diamond.obj</option>
-                                <option value="dinosaur.obj">dinosaur.obj</option>
-                                <option value="elephant.obj">elephant.obj</option>
-                                <option value="Fish.obj">Fish.obj</option>
-                                <option value="gourd.obj">gourd.obj</option>
-                                <option value="hand.obj">hand.obj</option>
-                                <option value="lion.obj">lion.obj</option>
-                                <option value="monster.obj">monster.obj</option>
-                                <option value="pyramid.obj">pyramid.obj</option>
-                                <option value="sphere.obj">sphere.obj</option>
-                                <option value="teapot.obj">teapot.obj</option>
-                                <option value="teddy.obj">teddy.obj</option>
-                                <option value="test.obj">test.obj</option>
-                                <option value="test2.obj">test2.obj</option>
-                                <option value="tetrahedron.obj">tetrahedron.obj</option>
-                            </select>
-                            <label>Select Model</label>
-                        </p>
-                        <p>
-                            <input type="checkbox" id="smooth" />
-                            <label for="smooth">Smooth Shading</label>
+                            <label for="smooth">Enable Smooth Shading</label>
                         </p>
                         <p id="startRenderingButton">
                             <a onclick="loadModel();" class="btn waves-effect waves-light" style="width:50%;">Run</a>
@@ -188,5 +160,6 @@
 
     </div>
 </div>
+<script type="text/javascript" src="./js/panelSwtich.js" ></script>
 </body>
 </html>
