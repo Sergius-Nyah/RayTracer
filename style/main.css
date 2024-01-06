@@ -1,0 +1,43 @@
+canvas {
+    padding: 0;
+}
+
+canvas:focus {
+    outline: none;
+}
+
+input {
+    text-align: center;
+}
+
+#doge1,
+#doge2 {
+    display: none;
+    position: absolute;
+    width: 40px;
+    right: -40px;
+}
+
+#objlayer,
+#raylayer {
+    /*display: block;*/
+    position: relative;
+}
+.container{
+    width: 80%;
+}
+.card-panel{
+    padding:0;
+    line-height:0;
+    position:relative;
+}
+.determinate{
+    width:0%;
+    margin:0;
+    -webkit-transition: none;
+    transition: none;
+}
+.progress{
+    margin:0;
+    display:none;
+}
