@@ -43,13 +43,13 @@
                 <div class="row">
                     <div class="col s12" style="height:32px;">
                         <ul class="tabs z-depth-1" style="position:absolute;top:0;left:0;">
-                            <li class="tab col s3"><a href="#panel1" onclick="$('#raylayer').show();$('#objlayer').hide();">Ray Tracing</a></li>
-                            <li class="tab col s3"><a class="active" href="#panel2" onclick="$('#raylayer').hide();$('#objlayer').show();">WebGL</a></li>
+                            <li class="tab col s3"><a href="#panel1" id="rayTracingTab">Ray Tracing</a></li>
+                            <li class="tab col s3"><a class="active" href="#panel2" id="webGLTab">WebGL</a></li>
                         </ul>
                     </div>
                 </div>
-                <!-- panel 1 -->
 
+                <!-- panel 1 -->
                 <div id="panel1" class="row">
                     <div class="col s10 m8 l12">
                         <div class="row">
