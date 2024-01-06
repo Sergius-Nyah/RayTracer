@@ -41,3 +41,11 @@ input {
     margin:0;
     display:none;
 }
+.divider{
+    width: 50%;
+}
+.file-field{
+    height:36px;
+    line-height:36px;
+    width:50%;
+}
