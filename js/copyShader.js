@@ -5,7 +5,7 @@
  * Full-screen textured quad shader
  */
 
-// Define the CopyShader object on the THREE namespace
+// Defines a CopyShader object in three.js library for rendering a full-screen textured quad
 THREE.CopyShader = {
 
     // Define the uniforms for the shader. These are global variables that are the same for all vertices and fragments.
