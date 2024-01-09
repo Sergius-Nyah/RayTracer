@@ -23,6 +23,10 @@ THREE.MaskPass.prototype = {
 
     render: function ( renderer, writeBuffer, readBuffer, delta ) {
 
+            /**
+             * The rendering context used by the renderer.
+             * @type {CanvasRenderingContext2D | WebGLRenderingContext}
+             */
             var context = renderer.context;
     
             // don't update color or depth
