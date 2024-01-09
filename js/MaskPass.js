@@ -22,7 +22,7 @@ THREE.MaskPass.prototype = {
     },
 
     render: function ( renderer, writeBuffer, readBuffer, delta ) {
-        
+
             var context = renderer.context;
     
             // don't update color or depth
@@ -74,7 +74,7 @@ THREE.ClearMaskPass = function () {
     this.enabled = true;
 
 };
-
+// Clears the stencil mark after it has been applied. 
 THREE.ClearMaskPass.prototype = {
 
     setEnabled: function (enabled) {
@@ -83,7 +83,11 @@ THREE.ClearMaskPass.prototype = {
 
     render: function ( renderer, writeBuffer, readBuffer, delta ) {
 
-        // Existing code...
+        // Existing code
+
+		var context = renderer.context;
+
+		context.disable( context.STENCIL_TEST );
 
     }
 
