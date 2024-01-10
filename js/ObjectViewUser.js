@@ -17,21 +17,20 @@ function checkRayLayer() {
     const rayLayer = $('#raylayer');
     if (rayLayer && rayLayer.width() && rayLayer.height()) {
         // The raylayer exists and has a width and height
+        return rayLayer;
     } else {
         // The raylayer doesn't exist or doesn't have a width or height
         console.error('#raylayer element not found or has no width or height');
+        return false;
     }
 }
 
 function startRendering() {
     init();
     animate();
-    // Get #raylayer element
-    const rayLayer = $('#raylayer');
-
-    // Check if the elt exists and has a width and height
-    if(rayLayer && rayLayer.width() && rayLayer.height()) {
-        //calculate the half-width and half-height of the element
+   
+    if(checkRayLayer()){
+    //calculate the half-width and half-height of the element
     windowHalfX = $('#raylayer').width() / 2;
     windowHalfY = $('#raylayer').height() / 2;
     }
