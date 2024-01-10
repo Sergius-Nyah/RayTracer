@@ -48,6 +48,8 @@ function createPlane(geometry, material, x, y, z, rotationX, rotationY, rotation
     scene.add(plane);
 }
 
+const PLANE_COLOR = 0x724a2f;
+const PLANE_DIMENSIONS = 100;
 function init() {
 
     container = document.createElement('div');
