@@ -50,6 +50,7 @@ function createPlane(geometry, material, x, y, z, rotationX, rotationY, rotation
 
 const PLANE_COLOR = 0x724a2f;
 const PLANE_DIMENSIONS = 100;
+const PLANE_SPECULAR = 0x707070;
 function init() {
 
     container = document.createElement('div');
@@ -63,11 +64,11 @@ function init() {
 
     cameraTarget = new THREE.Vector3(0, 0, 0);
 
-    // scene
-
-    scene = new THREE.Scene();
-
-    scene.fog = new THREE.Fog(0x72645b, 2, 15);
+    // creates a scene
+     scene = new THREE.Scene();
+    
+     // Adds di
+    scene.fog = new THREE.Fog(PLANE_COLOR, 2, 15);
 
 
     // ground
@@ -75,7 +76,7 @@ function init() {
         new THREE.PlaneBufferGeometry(1, 1),
         new THREE.MeshPhongMaterial({
             color: 0xffffff,
-            specular: 0x707070
+            specular: PLANE_SPECULAR
         })
     );
     plane.rotation.x = -Math.PI / 2;
@@ -122,7 +123,7 @@ function init() {
         new THREE.PlaneBufferGeometry(1, 1),
         new THREE.MeshPhongMaterial({
             color: 0x910606,
-            specular: 0x707070
+            specular: PLANE_SPECULAR
         })
     );
     plane.rotation.y = -Math.PI / 2;
@@ -137,7 +138,7 @@ function init() {
         new THREE.PlaneBufferGeometry(1, 1),
         new THREE.MeshPhongMaterial({
             color: 0x063c06,
-            specular: 0x707070
+            specular: PLANE_SPECULAR //0x707070;
         })
     );
     plane.rotation.y = Math.PI / 2;
@@ -153,7 +154,7 @@ function init() {
         new THREE.PlaneBufferGeometry(1, 1),
         new THREE.MeshPhongMaterial({
             color: 0xffffff,
-            specular: 0x707070
+            specular: PLANE_SPECULAR
         })
     );
     plane.rotation.z = Math.PI;
@@ -169,7 +170,7 @@ function init() {
         new THREE.PlaneBufferGeometry(1, 1),
         new THREE.MeshPhongMaterial({
             color: 0xffffff,
-            specular: 0x707070
+            specular: PLANE_SPECULAR
         })
     );
     plane.rotation.y = Math.PI;
