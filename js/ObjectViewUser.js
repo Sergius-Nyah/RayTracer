@@ -40,6 +40,14 @@ function startRendering() {
     }
 }
 
+// Function to create plane 
+function createPlane(geometry, material, x, y, z, rotationX, rotationY, rotationZ) {
+    const plane = new THREE.Mesh(geometry, material);
+    plane.position.set(x, y, z);
+    plane.rotation.set(rotationX, rotationY, rotationZ);
+    scene.add(plane);
+}
+
 function init() {
 
     container = document.createElement('div');
