@@ -12,6 +12,17 @@ window.addEventListener('resize', () => {
     $('#objlayer').height($('#raylayer').height());
 }, false);
 
+//Determines if raylayer exists and has a width and height
+function checkRayLayer() {
+    const rayLayer = $('#raylayer');
+    if (rayLayer && rayLayer.width() && rayLayer.height()) {
+        // The raylayer exists and has a width and height
+    } else {
+        // The raylayer doesn't exist or doesn't have a width or height
+        console.error('#raylayer element not found or has no width or height');
+    }
+}
+
 function startRendering() {
     init();
     animate();
