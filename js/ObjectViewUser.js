@@ -1,4 +1,12 @@
-var container, scene, renderer; 
+/**
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author Sergius / https://sergius.tech
+ * 
+ */
+// This file is a modified version of the original file from three.js /!\
+
+var container, scene, renderer;
 var controls, object, camera, place, maesh;
 var plane, mesh, camera2;
 var mouseX = 0,
