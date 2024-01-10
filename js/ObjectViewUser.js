@@ -67,7 +67,9 @@ function init() {
     // creates a scene
      scene = new THREE.Scene();
     
-     // Adds di
+     // Adds directional lights to the scene
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+    scene.add(directionalLight1);
     scene.fog = new THREE.Fog(PLANE_COLOR, 2, 15);
 
 
