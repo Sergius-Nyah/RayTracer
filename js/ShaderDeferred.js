@@ -2,6 +2,7 @@
  * @author alteredq / http://alteredqualia.com/
  * @author MPanknin / http://www.redplant.de/
  * @author benaadams / http://blog.illyriad.co.uk/
+ * @author Sergius /https://sergius.tech/
  *
  */
 
