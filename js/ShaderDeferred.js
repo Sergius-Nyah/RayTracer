@@ -307,48 +307,49 @@ THREE.ShaderDeferred = {
 
 		].join("\n"),
 
-		vertexShader : [
-
-			THREE.ShaderChunk[ "map_pars_vertex" ],
-			THREE.ShaderChunk[ "lightmap_pars_vertex" ],
-			THREE.ShaderChunk[ "color_pars_vertex" ],
-			THREE.ShaderChunk[ "morphtarget_pars_vertex" ],
-			THREE.ShaderChunk[ "skinning_pars_vertex" ],
-			THREE.ShaderChunk[ "shadowmap_pars_vertex" ],
-
-			"#ifdef USE_ENVMAP",
-
-				"varying vec3 vWorldPosition;",
-
-			"#endif",
-
-			"void main() {",
-
-				THREE.ShaderChunk[ "map_vertex" ],
-				THREE.ShaderChunk[ "lightmap_vertex" ],
-				THREE.ShaderChunk[ "color_vertex" ],
-
-				THREE.ShaderChunk[ "skinbase_vertex" ],
-
-				THREE.ShaderChunk[ "morphtarget_vertex" ],
-				THREE.ShaderChunk[ "skinning_vertex" ],
-				THREE.ShaderChunk[ "default_vertex" ],
-
-				THREE.ShaderChunk[ "worldpos_vertex" ],
-				THREE.ShaderChunk[ "shadowmap_vertex" ],
-
-				"#ifdef USE_ENVMAP",
-
-					"vWorldPosition = worldPosition.xyz;",
-
+		// All the magic happens here
+		//Allows you to write custom shaders
+		const normalDepthShader = new THREE.ShaderMaterial({
+			uniforms: {
+				bumpMap: { type: "t", value: null },
+				bumpScale: { type: "f", value: 1 },
+				offsetRepeat: { type: "v4", value: new THREE.Vector4(0, 0, 1, 1) }
+			},
+			fragmentShader: [
+				"#ifdef USE_BUMPMAP",
+				"#extension GL_OES_standard_derivatives : enable\n",
+				"varying vec2 vUv;",
+				"varying vec3 vViewPosition;",
+				THREE.ShaderChunk["bumpmap_pars_fragment"],
 				"#endif",
-
-			"}"
-
-		].join("\n")
-
-	},
-
+				"varying vec3 normalView;"
+			].join("\n"),
+			vertexShader: [
+				THREE.ShaderChunk["map_pars_vertex"],
+				THREE.ShaderChunk["lightmap_pars_vertex"],
+				THREE.ShaderChunk["color_pars_vertex"],
+				THREE.ShaderChunk["morphtarget_pars_vertex"],
+				THREE.ShaderChunk["skinning_pars_vertex"],
+				THREE.ShaderChunk["shadowmap_pars_vertex"],
+				"#ifdef USE_ENVMAP",
+				"varying vec3 vWorldPosition;",
+				"#endif",
+				"void main() {",
+				THREE.ShaderChunk["map_vertex"],
+				THREE.ShaderChunk["lightmap_vertex"],
+				THREE.ShaderChunk["color_vertex"],
+				THREE.ShaderChunk["skinbase_vertex"],
+				THREE.ShaderChunk["morphtarget_vertex"],
+				THREE.ShaderChunk["skinning_vertex"],
+				THREE.ShaderChunk["default_vertex"],
+				THREE.ShaderChunk["worldpos_vertex"],
+				THREE.ShaderChunk["shadowmap_vertex"],
+				"#ifdef USE_ENVMAP",
+				"vWorldPosition = worldPosition.xyz;",
+				"#endif",
+				"}"
+			].join("\n")
+		}),
 	"normalDepth" : {
 
 		uniforms: {
