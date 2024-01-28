@@ -1,5 +1,4 @@
-// Applies Fast Approximate Anti-Aliasing (FXAA) to a rendered image
-
+// Applies Fast Approximate Anti-Aliasing (FXAA) to a rendered imageg
 
 THREE.FXAAShader = {
  

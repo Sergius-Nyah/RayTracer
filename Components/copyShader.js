@@ -1,11 +1,5 @@
-/**
- * @author1 alteredq / http://alteredqualia.com/ [Base] 
- * @author2 Sergius-N / https//github.com/Sergius-Nyah [Refactored]
- *
- * Full-screen textured quad shader
- */
-
 // Defines a CopyShader object in three.js library for rendering a full-screen textured quad
+
 THREE.CopyShader = {
 
     // Define the uniforms for the shader. These are global variables that are the same for all vertices and fragments.
