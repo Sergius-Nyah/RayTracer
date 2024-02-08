@@ -195,180 +195,44 @@ RAY.spawnRay = function(origin, direction, color, recursionDepth, n, num_samples
         return;
     }
     var first = intersections[0];
-
-    /*if (recursionDepth >= 1) {
-        // color.r = color.g = color.b = first.distance;
-        if (first.distance <= 0.0000000001) {
-            if (intersections.length > 1) {
-                first = intersections[1];
-                // color.r = color.g = color.b = first.distance;
-            }
-        }
-        // return;
-    }*/
     var object = first.object;
-    // var cacheobject = this.objcache[object.id];
     var material = object.material;
+    var diffuseColor = this.getDiffuseColor(object);
+    var normalVector = new THREE.Vector3();
+    var rayLightOrigin = new THREE.Vector3().copy(first.point);
+    var rayLightDirection = new THREE.Vector3();
+    var jitterSample = this.getJitterSample(n, num_samples);
+    var eyeVector = this.getEyeVector(origin, first.point);
+    var specularColor = new THREE.Color(0, 0, 0);
+    var schlick = new THREE.Color(0, 0, 0);
+
+    this.calculateLightContribution(first, material, normalVector, rayLightOrigin, rayLightDirection, jitterSample, eyeVector, color, specularColor, schlick);
+
+    this.calculateReflection(first, direction, recursionDepth, n, num_samples, normalVector, eyeVector, color);
+}
+
+RAY.getDiffuseColor = function(object) {
     var diffuseColor = new THREE.Color(0, 0, 0);
     try {
-        // diffuseColor.copy(object.material.color);
         diffuseColor.copyGammaToLinear(object.material.color);
     } catch (e) {
         diffuseColor.set(0, 0, 0);
         console.warn("set diffuseColor fail");
     }
-
-    // var normalComputed = false;
-    var normalVector = new THREE.Vector3();
-
-    var rayLightOrigin = new THREE.Vector3();
-    rayLightOrigin.copy(first.point);
-    var rayLightDirection = new THREE.Vector3();
-
-    // 抖动采样
-    var x0 = (n != undefined) ? (-0.5 + Math.random() / num_samples + n % num_samples / num_samples) : 0;
-    var y0 = (n != undefined) ? (-0.5 + Math.random() / num_samples + Math.floor(n / num_samples) / num_samples) : 0;
-
-    // var localPoint=new THREE.Vector3();
-    // localPoint.copy(first.point).applyMatrix4(cacheobject.inverseMatrix);
-
-    var eyeVector = new THREE.Vector3();
-    eyeVector.subVectors(origin, first.point).normalize();
-
-    var halfVector = new THREE.Vector3();
-    var specularColor = new THREE.Color(0, 0, 0);
-    var schlick = new THREE.Color(0, 0, 0);
-
-    for (var i = 0; i < this.lights.length; i++) {
-        var lightVector = new THREE.Vector3();
-        lightVector.setFromMatrixPosition(this.lights[i].matrixWorld);
-        //console.log(lightVector);
-        var lightSize = this.light_size;
-        lightVector.x += x0 * lightSize;
-        lightVector.z += y0 * lightSize;
-        //lightVector.x+=(Math.random()-0.5)*lightSize;
-        //lightVector.z+=(Math.random()-0.5)*lightSize;
-        var distance = lightVector.distanceTo(first.point);
-
-        var lightPosition = new THREE.Vector3();
-        lightPosition.copy(lightVector);
-        lightVector.sub(first.point);
-
-        rayLightDirection.copy(lightVector).normalize();
-        rayLightDirection.multiplyScalar(-1);
-        var lightIntersections = this.raycasting(lightPosition, rayLightDirection, 0, distance - 0.00000001);
-
-        ////// DEBUG
-        // if (lightIntersections.length){
-        // 	distance=lightPosition.distanceTo(lightIntersections[0].point);
-        // }
-        // color.r=lightIntersections.length/3;
-
-        if (lightIntersections.length) {
-            continue;
-        }
-        if (material instanceof THREE.MeshBasicMaterial) {
-            var white = new THREE.Color(1, 1, 1);
-            color.add(white);
-        }
-        if (first.object.normal == undefined) {
-            normalVector.copy(first.face.normal);
-        } else {
-            normalVector.copy(first.object.normal);
-        }
-        //console.log(first);
-        var r = lightVector.length(); // / 1.2;
-        var attenuation = 1.0 / (r * r); //(lightVector.length() * lightVector.length());
-        lightVector.normalize();
-
-        var dot = Math.max(normalVector.dot(lightVector), 0);
-        //var dot = Math.abs(normalVector.dot(lightVector));
-        //console.log(dot);
-        var diffuseIntensity = dot * this.lights[i].intensity;
-        // console.log(diffuseIntensity);
-
-        var lightColor = new THREE.Color(0, 0, 0);
-        lightColor.copyGammaToLinear(this.lights[i].color);
-        // lightColor.copy(this.lights[i].color);
-
-        var lightContribution = new THREE.Color(0, 0, 0);
-        lightContribution.copy(diffuseColor);
-        lightContribution.multiply(lightColor);
-        lightContribution.multiplyScalar(diffuseIntensity * attenuation);
-
-        color.add(lightContribution);
-        if (material instanceof THREE.MeshPhongMaterial && first.object.normal == undefined) {
-            halfVector.addVectors(lightVector, eyeVector).normalize();
-
-            var dotNormalHalf = Math.max(normalVector.dot(halfVector), 0.0);
-            var specularIntensity = Math.max(Math.pow(dotNormalHalf, material.shininess), 0.0) * diffuseIntensity;
-
-            var specularNormalization = (material.shininess + 2.0) / 8.0;
-
-            // specularColor.copy(material.specular);
-            specularColor.copyGammaToLinear(material.specular);
-
-            var alpha = Math.pow(Math.max(1.0 - lightVector.dot(halfVector), 0.0), 5.0);
-
-            schlick.r = specularColor.r + (1.0 - specularColor.r) * alpha;
-            schlick.g = specularColor.g + (1.0 - specularColor.g) * alpha;
-            schlick.b = specularColor.b + (1.0 - specularColor.b) * alpha;
-
-            lightContribution.copy(schlick);
-
-            lightContribution.multiply(lightColor);
-            lightContribution.multiplyScalar(specularNormalization * specularIntensity * attenuation);
-            color.add(lightContribution);
-        }
-    }
-
-    // 反射
-    var tmpColor = new THREE.Color(0, 0, 0);
-
-    if (first.object.normal == undefined) {
-        normalVector.copy(first.face.normal);
-    } else {
-        normalVector.copy(first.object.normal);
-    }
-    if (recursionDepth < this.recursion_depth) {
-        var reflectVector = new THREE.Vector3();
-        reflectVector.copy(direction);
-        var r = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-        r.normalize();
-        r.multiplyScalar(this.reflect_diffusion);
-        normalVector.add(r);
-        normalVector.normalize();
-        reflectVector.reflect(normalVector);
-
-        // color.r = (reflectVector.x + 1) / 2;
-        // color.g = (reflectVector.y + 1) / 2;
-        // color.b = (reflectVector.z + 1) / 2;
-        // return;
-        var theta = Math.max(eyeVector.dot(normalVector), 0.0);
-        var rf0 = this.reflect_strength;
-        var fresnel = rf0 + (1.0 - rf0) * Math.pow((1.0 - theta), 5.0);
-        var weight = fresnel;
-        // console.log(fresnel);
-        var zColor = tmpColor; //[recursionDepth];
-        RAY.spawnRay(first.point, reflectVector, zColor, recursionDepth + 1, n, num_samples);
-
-        // RAY.spawnRay(first.point, reflectVector, color, recursionDepth + 1, n, num_samples);
-        // return;
-        if (material instanceof THREE.MeshPhongMaterial) {
-            zColor.multiply(material.color);
-        }
-
-        // console.log(zColor);
-        // zColor.copyGammaToLinear(zColor);
-        // console.log(color, zColor);
-        zColor.multiplyScalar(weight);
-        color.multiplyScalar(1 - weight);
-        color.add(zColor);
-    }
-    // console.log(color);
-    // color.copyLinearToGamma(color);
+    return diffuseColor;
 }
 
+RAY.getJitterSample = function(n, num_samples) {
+    var x0 = (n != undefined) ? (-0.5 + Math.random() / num_samples + n % num_samples / num_samples) : 0;
+    var y0 = (n != undefined) ? (-0.5 + Math.random() / num_samples + Math.floor(n / num_samples) / num_samples) : 0;
+    return {x0: x0, y0: y0};
+}
+
+RAY.getEyeVector = function(origin, point) {
+    var eyeVector = new THREE.Vector3();
+    eyeVector.subVectors(origin, point).normalize();
+    return eyeVector;
+}
 
 RAY.raycasting = function(origin, direction, near, far) {
     var raycaster = new THREE.Raycaster(origin, direction);
@@ -379,10 +243,3 @@ RAY.raycasting = function(origin, direction, near, far) {
     return raycaster.intersectObjects(this.objects, true);
 }
 
-RAY.reflecting = function() {
-
-}
-
-RAY.mixColor = function() {
-
-}
