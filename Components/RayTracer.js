@@ -1,4 +1,4 @@
-var RAY = {
+const RAY = {
     ctx: null,
     width: null,
     height: null,
@@ -18,69 +18,39 @@ var RAY = {
     num_samples: null
 };
 
-
-//预处理时生成一个结果数组，
-//加一个函数，输入progress，直接读数组返回xy
 RAY.init = function(ctx, width, height, progress) {
     this.ctx = ctx;
-    // this.ctx.lineWidth = 0;
-
     this.width = width;
-
     this.height = height;
-
     this.progress = progress;
-
     this.pause = false;
-
     this.timeout = 15;
-
     this.lights = [];
-
     this.objcache = {};
-
     this.maxRecursionDepth = 5;
+    this.num_samples = Number($('#samplersize').val());
+    this.lens_size = Number($('#lenssize').val());
+    this.light_size = Number($('#lightsize').val());
+    this.focal_distance = Number($('#focal').val());
+    this.recursion_depth = Number($('#recursion').val());
+    this.reflect_strength = Number($('#reflect').val());
+    this.reflect_diffusion = Number($('#reflect_d').val());
 
-    this.num_samples = $('#samplersize').val() - 0;
-
-    this.lens_size = $('#lenssize').val() - 0;
-
-    this.light_size = $('#lightsize').val() - 0;
-
-    this.focal_distance = $('#focal').val() - 0;
-
-    this.recursion_depth = $('#recursion').val() - 0;
-
-    this.reflect_strength = $('#reflect').val() - 0;
-
-    this.reflect_diffusion = $('#reflect_d').val() - 0;
-
-    var tmp = Math.min(this.width, this.height);
+    const tmp = Math.min(this.width, this.height);
     this.basesize = 1;
     while (this.basesize << 1 < tmp) {
         this.basesize <<= 1;
     }
 
-    var filled = [];
-    for (var i = 0; i < this.height; i++) {
-        var tmp = [];
-        for (var j = 0; j < this.width; j++) {
-            tmp.push(false);
-        }
-        filled.push(tmp);
-    }
+    const filled = Array(this.height).fill().map(() => Array(this.width).fill(false));
     this.coords = [];
-    var tmpc = [0, 0];
-    var size = this.basesize;
-    for (var i = 0; i < this.height * this.width; i++) {
-        this.coords.push({
-            x: tmpc[0],
-            y: tmpc[1],
-            size: size
-        });
+    let tmpc = [0, 0];
+    let size = this.basesize;
+    for (let i = 0; i < this.height * this.width; i++) {
+        this.coords.push({ x: tmpc[0], y: tmpc[1], size });
 
         filled[tmpc[1]][tmpc[0]] = true;
-        while (size > 0 && filled[tmpc[1]][tmpc[0]] == true) {
+        while (size > 0 && filled[tmpc[1]][tmpc[0]]) {
             tmpc[0] += size;
             if (tmpc[0] >= this.width) {
                 tmpc[0] = 0;
@@ -92,7 +62,6 @@ RAY.init = function(ctx, width, height, progress) {
             }
         }
     }
-
 }
 
 RAY.initScene = function(scene, camera) {
