@@ -63,111 +63,93 @@ RAY.init = function(ctx, width, height, progress) {
         }
     }
 }
-
 RAY.initScene = function(scene, camera) {
     this.scene = scene;
     this.camera = camera;
     this.cameraNormalMatrix = new THREE.Matrix3();
-    // console.log(camera.matrixWorld);
     this.cameraNormalMatrix.getNormalMatrix(this.camera.matrixWorld);
-    console.log(this.cameraNormalMatrix);
     this.perspective = 0.5 / Math.tan(THREE.Math.degToRad(camera.fov * 0.5)) * this.height;
     this.objects = scene.children;
 
-    this.num_samples = $('#samplersize').val() - 0;
+    this.num_samples = Number($('#samplersize').val());
+    this.lens_size = Number($('#lenssize').val());
+    this.light_size = Number($('#lightsize').val());
+    this.focal_distance = Number($('#focal').val());
+    this.recursion_depth = Number($('#recursion').val());
+    this.reflect_strength = Number($('#reflect').val());
+    this.reflect_diffusion = Number($('#reflect_d').val());
 
-    this.lens_size = $('#lenssize').val() - 0;
-
-    this.light_size = $('#lightsize').val() - 0;
-
-    this.focal_distance = $('#focal').val() - 0;
-
-    this.recursion_depth = $('#recursion').val() - 0;
-
-    this.reflect_strength = $('#reflect').val() - 0;
-
-    this.reflect_diffusion = $('#reflect_d').val() - 0;
-
-    var scope = this;
-    scene.traverse(function(object) {
-        if (object instanceof THREE.Light) {
-            if (object.type == "PointLight") {
-                scope.lights.push(object);
-            }
+    scene.traverse((object) => {
+        if (object instanceof THREE.Light && object.type === "PointLight") {
+            this.lights.push(object);
         }
-        if (scope.objcache[object.id] === undefined) {
-            scope.objcache[object.id] = {
+        if (this.objcache[object.id] === undefined) {
+            this.objcache[object.id] = {
                 normalMatrix: new THREE.Matrix3(),
                 inverseMatrix: new THREE.Matrix4()
             };
         }
-        var modelViewMatrix = new THREE.Matrix4();
-        modelViewMatrix.multiplyMatrices(scope.camera.matrixWorldInverse, object.matrixWorld);
+        const modelViewMatrix = new THREE.Matrix4();
+        modelViewMatrix.multiplyMatrices(this.camera.matrixWorldInverse, object.matrixWorld);
 
-        var _object = scope.objcache[object.id];
-
+        const _object = this.objcache[object.id];
         _object.normalMatrix.getNormalMatrix(modelViewMatrix);
         _object.inverseMatrix.getInverse(object.matrixWorld);
     });
 }
 
 RAY.traceCanvas = function(onprocess, onfinish) {
-    var end = this.width * this.height;
+    const end = this.width * this.height;
     while (!this.pause && this.progress < end) {
-
-        var coord = this.coords[this.progress];
-        var c = RAY.tracePixel(coord.x, this.height - coord.y);
-        var n = coord.size;
-        this.coords[this.progress].color = this.ctx.fillStyle = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + c.a + ')';
+        const coord = this.coords[this.progress];
+        const c = RAY.tracePixel(coord.x, this.height - coord.y);
+        const n = coord.size;
+        this.coords[this.progress].color = this.ctx.fillStyle = `rgba(${c.r},${c.g},${c.b},${c.a})`;
         this.ctx.fillRect(coord.x, coord.y, n, n);
         this.progress++;
-        if (this.progress > 1 && this.coords[this.progress - 1].y != this.coords[this.progress - 2].y) {
+        if (this.progress > 1 && this.coords[this.progress - 1].y !== this.coords[this.progress - 2].y) {
             onprocess();
-            setTimeout(function() {
+            setTimeout(() => {
                 RAY.traceCanvas(onprocess, onfinish)
             }, this.timeout);
             break;
         }
     }
-    if (this.progress == end) {
+    if (this.progress === end) {
         onprocess();
         onfinish();
     }
 }
 
-// with lens
 RAY.tracePixel = function(x, y) {
-    var origin = new THREE.Vector3();
-    var outputColor = new THREE.Color(0, 0, 0);
-    var num_samples = this.num_samples;
-    var num_samples2 = Math.pow(num_samples, 2);
-    for (var n = 0; n < num_samples2; n++) {
-        var color = new THREE.Color(0, 0, 0);
+    const origin = new THREE.Vector3();
+    let outputColor = new THREE.Color(0, 0, 0);
+    const num_samples2 = Math.pow(this.num_samples, 2);
+    for (let n = 0; n < num_samples2; n++) {
+        let color = new THREE.Color(0, 0, 0);
         origin.copy(this.camera.position);
-        // 抖动采样
-        x0 = x - 0.5 + Math.random() / num_samples + n % num_samples / num_samples;
-        y0 = y - 0.5 + Math.random() / num_samples + Math.floor(n / num_samples) / num_samples;
+        const x0 = x - 0.5 + Math.random() / this.num_samples + n % this.num_samples / this.num_samples;
+        const y0 = y - 0.5 + Math.random() / this.num_samples + Math.floor(n / this.num_samples) / this.num_samples;
 
-        var pp = [x0 - this.width / 2, y0 - this.height / 2]; //sample point on a pixel
-        var tmp = Math.random() * Math.PI * 2;
-        //var lens_radius = 0.0 * Math.random();
-        var lens_radius = this.lens_size * Math.random();
-        var lp = [lens_radius * Math.cos(tmp), lens_radius * Math.sin(tmp)];
+        const pp = [x0 - this.width / 2, y0 - this.height / 2];
+        const tmp = Math.random() * Math.PI * 2;
+        const lens_radius = this.lens_size * Math.random();
+        const lp = [lens_radius * Math.cos(tmp), lens_radius * Math.sin(tmp)];
         origin.x += lp[0];
         origin.y += lp[1];
 
         lp[0] *= Math.cos(Math.atan2(camera.position.x, camera.position.z));
         lp[1] *= 1;
-        //ray direction
-        var f = this.focal_distance; //focal plane distance
-        var d = this.perspective; //view plane distance
-        var direction = new THREE.Vector3(pp[0] * f / d - lp[0], pp[1] * f / d - lp[1], -f);
-        direction.applyMatrix3(this.cameraNormalMatrix); //.normalize();
+
+        const f = this.focal_distance;
+        const d = this.perspective;
+        const direction = new THREE.Vector3(pp[0] * f / d - lp[0], pp[1] * f / d - lp[1], -f);
+        direction.applyMatrix3(this.cameraNormalMatrix);
         direction.normalize();
-        this.spawnRay(origin, direction, color, 0, n, num_samples);
-        if (color.r > 1) color.r = 1;
-        if (color.g > 1) color.g = 1;
-        if (color.b > 1) color.b = 1;
+        this.spawnRay(origin, direction, color, 0, n, this.num_samples);
+        color.r = Math.min(color.r, 1);
+        color.g = Math.min(color.g, 1);
+        color.b = Math.min(color.b, 1);
         outputColor.add(color);
     }
     outputColor.r /= num_samples2;
@@ -187,15 +169,15 @@ RAY.tracePixel = function(x, y) {
 /*
 //without lens
 RAY.tracePixel = function(x, y) {
-	var origin = new THREE.Vector3();
+	const origin = new THREE.Vector3();
 	origin.copy(this.camera.position);
 	x += Math.random() - 0.5;
 	y += Math.random() - 0.5;
 
-	var direction = new THREE.Vector3(x - this.width / 2, y - this.height / 2, -this.perspective);
+	const direction = new THREE.Vector3(x - this.width / 2, y - this.height / 2, -this.perspective);
 	direction.applyMatrix3(this.cameraNormalMatrix).normalize();
 
-	var outputColor = new THREE.Color(0, 0, 0);
+	const outputColor = new THREE.Color(0, 0, 0);
 	this.spawnRay(origin, direction, outputColor, 0);
 
 	return {
